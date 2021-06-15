@@ -1,0 +1,56 @@
+repos:
+  -   repo: https://github.com/MarcoGorelli/absolufy-imports
+      rev: v0.3.0
+      hooks:
+        -   id: absolufy-imports
+            #files:
+  # Formats file to STRINGENT (but standardized) specifications
+  -   repo: https://github.com/python/black
+      rev: 21.5b2
+      hooks:
+        -   id: black
+  -   repo: https://github.com/codespell-project/codespell
+      rev: v2.0.0
+      hooks:
+        -   id: codespell
+            types_or: [python, rst, markdown]
+  -   repo: https://github.com/pre-commit/pre-commit-hooks
+      rev: v4.0.1
+      hooks:
+        -   id: debug-statements
+        -   id: end-of-file-fixer
+            exclude: \.txt$
+        -   id: trailing-whitespace
+
+  # Sorts imports
+  - repo: https://github.com/pycqa/isort
+    rev: 5.8.0
+    hooks:
+      - id: isort
+
+  # Checks Static typing is correct
+  -   repo: https://github.com/pre-commit/mirrors-mypy
+      rev: 'v0.812'  # Use the sha / tag you want to point at
+      hooks:
+      -   id: mypy
+
+  # Pylint Test
+  -   repo: https://github.com/PyCQA/pylint
+      rev: v2.8.3
+      hooks:
+        - id: pylint
+
+  # Flake8 Test
+  -   repo: https://gitlab.com/pycqa/flake8
+      rev: 3.9.2
+      hooks:
+        - id: flake8
+
+#  - repo: local
+#    hooks:
+#        - id: pytest-check
+#          name: pytest-check
+#          entry: pytest
+#          language: system
+#          pass_filenames: false
+#          always_run: true

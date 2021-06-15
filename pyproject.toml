@@ -1,0 +1,54 @@
+[tool.poetry]
+name = "circuit-sim"
+version = "0.9"
+description = "Circuit Simulation dataset creation"
+authors = ["Nate Ruppert <nate.ruppert@csu.fullerton.edu>"]
+packages = [
+    { include = "main.py" },
+    { include = "library/*.py" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+ltspice = "^1.0.1"
+pandas = "^1.2.4"
+
+
+[tool.poetry.dev-dependencies]
+pre-commit = "^2.13.0"
+Sphinx = "^4.0.2"
+rinohtype = "^0.5.2"
+sphinx-rtd-theme = "^0.5.2"
+pydeps = "^1.9.13"
+pytest = "^6.2.4"
+flake8 = "^3.9.2"
+black = "^21.5b2"
+pytest-cov = "^2.12.1"
+pyinstaller = "^4.3"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.isort]
+profile='black'
+
+[tool.black]
+target-version = ['py39']
+exclude = '''
+(
+    asv_bench/env
+  | \.egg
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.nox
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | setup.py
+)
+'''
