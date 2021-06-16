@@ -48,7 +48,7 @@ def list_types(max_cells: List[int], sets_to_make=None) -> List[List[int]]:
 
 
 def create_file(
-    file_path: str,
+    file_path: pathlib.PurePath,
     row: int,
     col: int,
     num_shade: int,
@@ -65,7 +65,7 @@ def create_file(
         of sunlight (Highest possible efficiency) or in the shade (Lower efficiency than Highest but not 0).
 
     Args:
-        file_path (str): Location of where the file will be placed
+        file_path (pathlib.PurePath): Location of where the file will be placed
         row (int): Number of cells per column
         col (int): Number of columns per circuit
         num_shade (int): Number of shaded cells in circuit
@@ -133,7 +133,7 @@ def create_file(
 
 
 def create_special_file(
-    file_path: str,
+    file_path: pathlib.PurePath,
     row: int,
     col: int,
     full_volt: int,
@@ -160,7 +160,7 @@ def create_special_file(
             as requested by the user
 
     Args:
-        file_path (str): Location of where the file will be placed
+        file_path (pathlib.PurePath): Location of where the file will be placed
         row (int): Number of cells per column
         col (int): Number of columns per circuit
         full_volt (int): Value (voltage) of "Full" intensity
@@ -223,7 +223,9 @@ def create_special_file(
 def main():
     """Given a config file ``data_sets.ini`` develops all requested datasets for run via LTSpiceXVII"""
     config = configparser.ConfigParser()
-    config.read(pathlib.PurePath("../data_sets.ini"))
+    config.read(
+        pathlib.PurePath(__file__).parent.joinpath(pathlib.PurePath("../data_sets.ini"))
+    )
 
     # Reads config file ``data_sets.ini`` and provides the requested data sets for set creation
     data_sets = [
@@ -254,15 +256,18 @@ def main():
         print(f"Generating {dataset} for temperatures: {temp_sets}")
         for temp in temp_sets:
             for row, col in file_sets:
+                local = pathlib.PurePath(__file__).parent
                 high, low = map(int, dataset.split("-"))
-                filepath = f"../Output/{high}-{low}/Temp{temp}/{row}x{col}"
+                filepath = local.joinpath(
+                    pathlib.PurePath(f"../Output/{high}-{low}/Temp{temp}/{row}x{col}")
+                )
                 os.makedirs(
-                    pathlib.PurePath(filepath),
+                    local.joinpath(filepath),
                     exist_ok=True,
                 )
-                with open("../cell_2.lib", "r") as file_r, open(
-                    filepath + "/cell_2.lib", "w"
-                ) as f:
+                with open(
+                    local.joinpath(pathlib.PurePath("../cell_2.lib")), "r"
+                ) as file_r, open(filepath.joinpath("cell_2.lib"), "w") as f:
                     f.write(file_r.read())  # write out the file to correct pathing
                 for num in range(row * col + 1):
                     create_file(filepath, row, col, num, high, low, temp)

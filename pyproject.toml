@@ -5,6 +5,8 @@ description = "Circuit Simulation dataset creation"
 authors = ["Nate Ruppert <nate.ruppert@csu.fullerton.edu>"]
 packages = [
     { include = "src/main.py" },
+    { include = "data_sets.ini" },
+    { include = "cell_2.lib" },
 ]
 
 [tool.poetry.dependencies]

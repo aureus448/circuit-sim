@@ -13,12 +13,9 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import os
-
 from src import main
 
 
 def test_main():
     """No supported variability in main yet - if successful run mark test pass"""
-    os.chdir("src/")
     main.main()
