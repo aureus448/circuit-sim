@@ -259,7 +259,7 @@ def main():
                     pathlib.PurePath(filepath),
                     exist_ok=True,
                 )
-                with open("cell_2.lib", "r") as file_r, open(
+                with open("../cell_2.lib", "r") as file_r, open(
                     filepath + "/cell_2.lib", "w"
                 ) as f:
                     f.write(file_r.read())  # write out the file to correct pathing
