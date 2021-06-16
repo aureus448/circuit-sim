@@ -1,3 +1,17 @@
+#  Copyright (c) 2021 Nate Ruppert
+#  This program is free software: you can redistribute it and/or modify
+#      it under the terms of the GNU General Public License as published by
+#      the Free Software Foundation, either version 3 of the License, or
+#      (at your option) any later version.
+#
+#      This program is distributed in the hope that it will be useful,
+#      but WITHOUT ANY WARRANTY; without even the implied warranty of
+#      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#      GNU General Public License for more details.
+#
+#      You should have received a copy of the GNU General Public License
+#      along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 import configparser
 import os
 import pathlib
@@ -194,7 +208,7 @@ def create_special_file(
                 )
                 # If designing a short file, shorts the cell connection with a 0 value dc source
                 if file_type == "short" and j == row and i + 1 > col - type_num:
-                    f.write(f"is_{start}_{end} {start} 0 dc 0\n")
+                    f.write(f"r_{start}_{end} {start} 0 0.0001\n")
                 f.write("\n")  # <br>
 
         # Required final data for files
