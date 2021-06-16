@@ -1,0 +1,26 @@
+****************************************************
+*																	*
+*			CELL_2.LIB											*
+****************************************************
+*	MODEL LEVEL 2
+*	TWO DIODES (DIFFUSION,D1 AND RECOMBINATION,D2)
+*	CURRENT SOURCE
+*	SERIES RESISTANCE 	RS
+*	SHUNT RESISTANCE	RSH
+*	BUILT-IN SPICE DIODE MODEL D
+*	NODES
+*	(300)REFERENCE
+*	(301)INTERNAL NODE
+*	(302)INPUT, IRRADIANCE
+*	(303) OUTPUT
+
+.subckt cell_2 300 303 302 params:area=1, j0=1, jsc=1, j02=1, rs=1, rsh=1
+
+girrad 300 301 value={(jsc/1000)*v(302)*area}
+d1 301 300 diode
+.model diode d(is={j0*area})
+d2 301 300 diode2
+.model diode2 d(is={j02*area}, n=2)
+rs 301 303 {rs}
+rsh 301 300 {rsh}
+.ends cell_2
