@@ -221,8 +221,9 @@ def create_special_file(
 
 
 def main():
+    """Given a config file ``data_sets.ini`` develops all requested datasets for run via LTSpiceXVII"""
     config = configparser.ConfigParser()
-    config.read("data_sets.ini")
+    config.read("../data_sets.ini")
 
     # Reads config file ``data_sets.ini`` and provides the requested data sets for set creation
     data_sets = [
@@ -254,7 +255,7 @@ def main():
         for temp in temp_sets:
             for row, col in file_sets:
                 high, low = map(int, dataset.split("-"))
-                filepath = f"Output/{high}-{low}/Temp{temp}/{row}x{col}"
+                filepath = f"../Output/{high}-{low}/Temp{temp}/{row}x{col}"
                 os.makedirs(
                     pathlib.PurePath(filepath),
                     exist_ok=True,
