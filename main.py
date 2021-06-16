@@ -137,7 +137,7 @@ def create_special_file(
         f.write(".probe\n.end\n")  # End file
 
 
-if __name__ == "__main__":
+def main():
     config = configparser.ConfigParser()
     config.read("data_sets.ini")
 
@@ -209,4 +209,7 @@ if __name__ == "__main__":
                                 "short",
                                 num,
                             )
-                exit()
+
+
+if __name__ == "__main__":
+    main()
