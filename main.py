@@ -1,3 +1,4 @@
+import configparser
 import os
 import pathlib
 
@@ -17,7 +18,7 @@ def list_types():
     return a
 
 
-def create_file(path, row, col, shade, full_val, shade_val):
+def create_file(path, row, col, shade, full_val, shade_val, temp):
     with open(
         f"{path}/{row}x{col}_{shade if shade != 0 else 'No'}_Shading.cir", "w+"
     ) as f:
@@ -26,7 +27,6 @@ def create_file(path, row, col, shade, full_val, shade_val):
             f"* Circuit Simulation of {row} Series x {col} Parallel Solar Cell Arrangement\n"
         )
         # Required for project
-        temp = 30  # TODO future support for changing temps
         f.write(".include cell_2.lib\n")
         f.write(f".option temp={temp}")
         f.write("\n")  # <br>
@@ -73,23 +73,48 @@ def create_file(path, row, col, shade, full_val, shade_val):
 
 
 if __name__ == "__main__":
+    config = configparser.ConfigParser()
+    config.read("data_sets.ini")
 
-    for row, col in list_types():
+    data_sets = [
+        [key, config[key]["temps"]] for key in config.keys() if key != "DEFAULT"
+    ]
 
-        # TODO code designed to develop shade/no-shade (default case 1000-900)
-        full = 1000
-        shade_val = 900
+    for set, temps in data_sets:
 
-        for n_shade in range(row * col + 1):
-            os.makedirs(
-                pathlib.PurePath(f"Output/{full}-{shade_val}/{row}x{col}"),
-                exist_ok=True,
-            )
-            create_file(
-                f"Output/{full}-{shade_val}/{row}x{col}",
-                row,
-                col,
-                n_shade,
-                full,
-                shade_val,
-            )
+        # Step 1: Collect Temperatures to Run
+        if not temps:
+            temp_sets = [27, 30, 35, 40, 45, 50]
+        else:
+            var_sets = temps.split(", ")
+            temp_sets = []
+            for val in var_sets:
+                if "-" in val:
+                    lower, upper = val.split("-")
+                    results = [x for x in range(int(lower), int(upper) + 1)]
+                else:
+                    results = [int(val)]
+                temp_sets += results
+        print(f"Generating {set} for temperatures: {temp_sets}")
+        for temp in temp_sets:
+            for row, col in list_types():
+                sets_to_make = ["1x10", "2x4", "2x5", "3x3", "4x2", "5x2", "10x1"]
+                if f"{row}x{col}" not in sets_to_make:
+                    continue
+                high, low = map(int, set.split("-"))
+
+                for n_shade in range(row * col + 1):
+                    filepath = f"Output/{high}-{low}/Temp{temp}/{row}x{col}"
+                    os.makedirs(
+                        pathlib.PurePath(filepath),
+                        exist_ok=True,
+                    )
+                    create_file(
+                        filepath,
+                        row,
+                        col,
+                        n_shade,
+                        high,
+                        low,
+                        temp,
+                    )
