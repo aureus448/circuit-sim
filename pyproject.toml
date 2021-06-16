@@ -4,8 +4,7 @@ version = "0.9"
 description = "Circuit Simulation dataset creation"
 authors = ["Nate Ruppert <nate.ruppert@csu.fullerton.edu>"]
 packages = [
-    { include = "main.py" },
-    { include = "library/*.py" },
+    { include = "src/main.py" },
 ]
 
 [tool.poetry.dependencies]
