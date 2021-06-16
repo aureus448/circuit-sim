@@ -117,14 +117,9 @@ def create_special_file(
                 )
                 f.write("+ jsc=30.5E-3 rs=28e-3 rsh=100000\n")
                 # Voltage changed to use shade
-                if (i + 1) * j <= shade:  # Shade number indicates how many to shade
-                    f.write(
-                        f'virrad_{start}_{end}  {end}{start} {end if j != row else "0"} dc {shade_val}\n'
-                    )
-                else:
-                    f.write(
-                        f'virrad_{start}_{end}  {end}{start} {end if j != row else "0"} dc {full_val}\n'
-                    )
+                f.write(
+                    f'virrad_{start}_{end}  {end}{start} {end if j != row else "0"} dc {full_val}\n'
+                )
                 if type == "short" and j == row and i + 1 > col - type_num:
                     # (j*i+1) > (col*row)-type_num:
                     f.write(f"is_{start}_{end} {start} 0 dc 0\n")
