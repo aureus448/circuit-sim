@@ -29,7 +29,7 @@ def create_file(path, row, col, shade, full_val, shade_val, temp):
         f.write(
             f"* Circuit Simulation of {row} Series x {col} Parallel Solar Cell Arrangement\n"
         )
-        f.write(f"* {shade} Shade {row*col-shade} No-Shade File\n")
+        f.write(f"* {shade} Shade {row * col - shade} No-Shade File\n")
         # Required for project
         f.write(".include cell_2.lib\n")
         f.write(f".option temp={temp}")
@@ -37,7 +37,7 @@ def create_file(path, row, col, shade, full_val, shade_val, temp):
 
         # Adds data for each cell depending on how many cells to add
         for i in range(col):
-            f.write(f"\n*** Start of Column {i+1:02d}\n\n")
+            f.write(f"\n*** Start of Column {i + 1:02d}\n\n")
 
             for j in range(1, row + 1):
                 # Define Start
@@ -45,14 +45,14 @@ def create_file(path, row, col, shade, full_val, shade_val, temp):
                 start = f"{i}{j}"
 
                 # Define End
-                end = f"{i}{j+1}"
+                end = f"{i}{j + 1}"
                 # Cell A and Cell B design
                 # xcell_01_12 12 01 1201
                 # xcell_12_00 0  12 0012
                 # virrad_11_12  1201  12 dc 1000
                 # virrad_12_00  0012  0  dc 1000
                 # Formats similar to above - sorta
-                f.write(f"** Cell {j:02d} [Col {i+1:02d}]\n")
+                f.write(f"** Cell {j:02d} [Col {i + 1:02d}]\n")
                 f.write(
                     f'xcell_{start}_{end} {end if j != row else "0"} {start if j != 1 else "01"} '
                     f"{end}{start} cell_2 params:area=49  j0=16E-20 j02=1.2E-12\n"
@@ -71,7 +71,7 @@ def create_file(path, row, col, shade, full_val, shade_val, temp):
         f.write("\nvbias 01 0 dc 0\n")  # Add voltage probe
         f.write(".plot dc i(vbias)\n")  # Plot current based on voltage probe
         f.write(
-            f".dc vbias 0 {1.05*row} 0.01\n"
+            f".dc vbias 0 {1.05 * row} 0.01\n"
         )  # Indicate voltage probe voltage characteristics
         f.write(".probe\n.end\n")  # End file
 
@@ -79,12 +79,12 @@ def create_file(path, row, col, shade, full_val, shade_val, temp):
 def create_special_file(
     path, row, col, shade, full_val, shade_val, temp, type, type_num
 ):
-    with open(f"{path}/{row}x{col}_{type_num}_{type}.cir", "w+") as f:
+    with open(f"{path}/{row}x{col}_{type_num}_{type.capitalize()}.cir", "w+") as f:
         f.write("* Files designed by circuit-sim by Nate Ruppert\n")
         f.write(
             f"* Circuit Simulation of {row} Series x {col} Parallel Solar Cell Arrangement\n"
         )
-        f.write(f"* {shade} Shade {row*col-shade} No-Shade File")
+        f.write(f"* {type_num} {type} {row * col - type_num} No-{type} File\n")
         # Required for project
         f.write(".include cell_2.lib\n")
         f.write(f".option temp={temp}")
@@ -92,22 +92,25 @@ def create_special_file(
 
         # Adds data for each cell depending on how many cells to add
         for i in range(col):
-            f.write(f"\n*** Start of Column {i+1:02d}\n\n")
-
+            f.write(f"\n*** Start of Column {i + 1:02d}\n\n")
+            # For open circuits, we simply skip creating data for a column
+            if type == "open" and i >= col - type_num:
+                f.write("* Column Skipped due to Open Circuit\n")
+                continue
             for j in range(1, row + 1):
                 # Define Start
 
                 start = f"{i}{j}"
 
                 # Define End
-                end = f"{i}{j+1}"
+                end = f"{i}{j + 1}"
                 # Cell A and Cell B design
                 # xcell_01_12 12 01 1201
                 # xcell_12_00 0  12 0012
                 # virrad_11_12  1201  12 dc 1000
                 # virrad_12_00  0012  0  dc 1000
                 # Formats similar to above - sorta
-                f.write(f"** Cell {j:02d} [Col {i+1:02d}]\n")
+                f.write(f"** Cell {j:02d} [Col {i + 1:02d}]\n")
                 f.write(
                     f'xcell_{start}_{end} {end if j != row else "0"} {start if j != 1 else "01"} '
                     f"{end}{start} cell_2 params:area=49  j0=16E-20 j02=1.2E-12\n"
@@ -122,11 +125,14 @@ def create_special_file(
                     f.write(
                         f'virrad_{start}_{end}  {end}{start} {end if j != row else "0"} dc {full_val}\n'
                     )
+                if type == "short" and j == row and i + 1 > col - type_num:
+                    # (j*i+1) > (col*row)-type_num:
+                    f.write(f"is_{start}_{end} {start} 0 dc 0\n")
                 f.write("\n")  # <br>
         f.write("\nvbias 01 0 dc 0\n")  # Add voltage probe
         f.write(".plot dc i(vbias)\n")  # Plot current based on voltage probe
         f.write(
-            f".dc vbias 0 {1.05*row} 0.01\n"
+            f".dc vbias 0 {1.05 * row} 0.01\n"
         )  # Indicate voltage probe voltage characteristics
         f.write(".probe\n.end\n")  # End file
 
@@ -168,13 +174,39 @@ if __name__ == "__main__":
                     filepath + "/cell_2.lib", "w"
                 ) as f:
                     f.write(file_r.read())  # write out the file to correct pathing
-                for n_shade in range(row * col + 1):
+                for num in range(row * col + 1):
                     create_file(
                         filepath,
                         row,
                         col,
-                        n_shade,
+                        num,
                         high,
                         low,
                         temp,
                     )
+                    if num > 0:
+                        if num < col:
+                            create_special_file(
+                                filepath,
+                                row,
+                                col,
+                                0,
+                                high,
+                                low,
+                                temp,
+                                "open",
+                                num,
+                            )
+                        if num <= col:
+                            create_special_file(
+                                filepath,
+                                row,
+                                col,
+                                0,
+                                high,
+                                low,
+                                temp,
+                                "short",
+                                num,
+                            )
+                exit()
