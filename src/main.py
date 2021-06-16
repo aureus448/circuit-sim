@@ -223,7 +223,7 @@ def create_special_file(
 def main():
     """Given a config file ``data_sets.ini`` develops all requested datasets for run via LTSpiceXVII"""
     config = configparser.ConfigParser()
-    config.read(pathlib.PurePath("data_sets.ini"))
+    config.read(pathlib.PurePath("../data_sets.ini"))
 
     # Reads config file ``data_sets.ini`` and provides the requested data sets for set creation
     data_sets = [
