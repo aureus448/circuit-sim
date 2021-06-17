@@ -220,11 +220,11 @@ def create_special_file(
         f.write(".probe\n.end\n")  # End file
 
 
-def main():
+def main(path: str):
     """Given a config file ``data_sets.ini`` develops all requested datasets for run via LTSpiceXVII"""
     config = configparser.ConfigParser()
     config.read(
-        pathlib.PurePath(__file__).parent.joinpath(pathlib.PurePath("../data_sets.ini"))
+        pathlib.PurePath(__file__).parent.joinpath(pathlib.PurePath("data_sets.ini"))
     )
 
     # Reads config file ``data_sets.ini`` and provides the requested data sets for set creation
@@ -256,7 +256,7 @@ def main():
         print(f"Generating {dataset} for temperatures: {temp_sets}")
         for temp in temp_sets:
             for row, col in file_sets:
-                local = pathlib.PurePath(__file__).parent
+                local = pathlib.PurePath(path)
                 high, low = map(int, dataset.split("-"))
                 filepath = local.joinpath(
                     pathlib.PurePath(f"../Output/{high}-{low}/Temp{temp}/{row}x{col}")
@@ -266,7 +266,10 @@ def main():
                     exist_ok=True,
                 )
                 with open(
-                    local.joinpath(pathlib.PurePath("../cell_2.lib")), "r"
+                    pathlib.PurePath(__file__).parent.joinpath(
+                        pathlib.PurePath("cell_2.lib")
+                    ),
+                    "r",
                 ) as file_r, open(filepath.joinpath("cell_2.lib"), "w") as f:
                     f.write(file_r.read())  # write out the file to correct pathing
                 for num in range(row * col + 1):
@@ -283,4 +286,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main(".")

@@ -1,13 +1,8 @@
 [tool.poetry]
-name = "circuit-sim"
+name = "circuit_sim"
 version = "0.9"
 description = "Circuit Simulation dataset creation"
 authors = ["Nate Ruppert <nate.ruppert@csu.fullerton.edu>"]
-packages = [
-    { include = "src/main.py" },
-    { include = "data_sets.ini" },
-    { include = "cell_2.lib" },
-]
 
 [tool.poetry.dependencies]
 python = "^3.9"
