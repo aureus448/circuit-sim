@@ -13,9 +13,9 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from circuit_sim import main
+from circuit_sim import circuit_sim
 
 
 def test_main():
     """No supported variability in main yet - if successful run mark test pass"""
-    main.main("./circuit_sim/")
+    circuit_sim.create_files(".")

@@ -220,8 +220,12 @@ def create_special_file(
         f.write(".probe\n.end\n")  # End file
 
 
-def main(path: str):
-    """Given a config file ``data_sets.ini`` develops all requested datasets for run via LTSpiceXVII"""
+def create_files(path: str = "."):
+    """Given a config file ``data_sets.ini`` develops all requested datasets for run via LTSpiceXVII
+
+    Args:
+        path (str): Path to output files (Defaults to exactly where command is run)
+    """
     config = configparser.ConfigParser()
     config.read(
         pathlib.PurePath(__file__).parent.joinpath(pathlib.PurePath("data_sets.ini"))
@@ -259,7 +263,7 @@ def main(path: str):
                 local = pathlib.PurePath(path)
                 high, low = map(int, dataset.split("-"))
                 filepath = local.joinpath(
-                    pathlib.PurePath(f"../Output/{high}-{low}/Temp{temp}/{row}x{col}")
+                    pathlib.PurePath(f"Output/{high}-{low}/Temp{temp}/{row}x{col}")
                 )
                 os.makedirs(
                     local.joinpath(filepath),
@@ -286,4 +290,4 @@ def main(path: str):
 
 
 if __name__ == "__main__":
-    main(".")
+    create_files(".")

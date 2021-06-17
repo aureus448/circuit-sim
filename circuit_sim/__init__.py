@@ -12,4 +12,6 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
-__all__ = "main"
+from circuit_sim.circuit_sim import create_files
+
+__all__ = "circuit_sim"
