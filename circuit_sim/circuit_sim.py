@@ -73,8 +73,11 @@ def create_file(
         shade_volt (int): Value (voltage) of "Shade" intensity
         temp (int): Temperature of circuit
     """
+    # Do not duplicate work
+    if os.path.exists(f"{file_path}/{row}x{col}_{num_shade}_Shading.cir"):
+        return
     with open(
-        f"{file_path}/{row}x{col}_{num_shade if num_shade != 0 else 'No'}_Shading.cir",
+        f"{file_path}/{row}x{col}_{num_shade}_Shading.cir",
         "w+",
     ) as f:
         # Write of information of how files were made and what they do
@@ -141,6 +144,11 @@ def create_special_file(
     file_type: str,
     type_num: int,
 ) -> None:
+    # Do not duplicate work
+    if os.path.exists(
+        f"{file_path}/{row}x{col}_{type_num}_{file_type.capitalize()}.cir"
+    ):
+        return
     """Creates a LTSpiceXVII simulation file
 
     Takes in several arguments, all required for producing the output as expected. Depending on ``file_type`` provided,
