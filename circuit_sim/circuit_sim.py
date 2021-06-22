@@ -13,9 +13,48 @@
 #      along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import configparser
+import logging
 import os
 import pathlib
+import re
+import subprocess
+import time
+from queue import Queue
+from subprocess import Popen
 from typing import List
+
+import ltspice
+import pandas as pd
+
+logger = logging.getLogger(__file__)
+
+
+def set_logger(log: logging.Logger, name: str):
+    """Set up of logging program based on a provided logging.Logger
+
+    Args:
+        log (logging.Logger): Logger object to add handlers to
+        name (str): Output file name
+
+    Returns:
+
+    """
+    log.setLevel(logging.DEBUG)
+
+    sh = logging.StreamHandler()
+    fh = logging.FileHandler(name, mode="w")
+    sh.setLevel(logging.INFO)
+    fh.setLevel(logging.DEBUG)
+
+    formatter = logging.Formatter(
+        "%(asctime)s - %(levelname)s - %(message)s", "%d/%m/%Y | %H:%M:%S"
+    )
+    sh.setFormatter(formatter)
+    fh.setFormatter(formatter)
+
+    log.addHandler(fh)
+    log.addHandler(sh)
+    return log
 
 
 def list_types(max_cells: List[int], sets_to_make=None) -> List[List[int]]:
@@ -42,7 +81,7 @@ def list_types(max_cells: List[int], sets_to_make=None) -> List[List[int]]:
                 elif cellA * cellB == i:
                     if f"{cellA}x{cellB}" not in sets_to_make and sets_to_make:
                         continue
-                    print(f"[{i}] Will Design Solar Arrangement {cellA}x{cellB}")
+                    logger.info(f"[{i}] Will Design Solar Arrangement {cellA}x{cellB}")
                     sets.append([cellA, cellB])
     return sets
 
@@ -75,7 +114,11 @@ def create_file(
     """
     # Do not duplicate work
     if os.path.exists(f"{file_path}/{row}x{col}_{num_shade}_Shading.cir"):
+        logger.debug(
+            f"File {row}x{col}_{num_shade}_Shading.cir already exists - Skipping"
+        )
         return
+    logger.debug(f"Beginning creation of {row}x{col}_{num_shade}_Shading.cir")
     with open(
         f"{file_path}/{row}x{col}_{num_shade}_Shading.cir",
         "w+",
@@ -148,7 +191,13 @@ def create_special_file(
     if os.path.exists(
         f"{file_path}/{row}x{col}_{type_num}_{file_type.capitalize()}.cir"
     ):
+        logger.debug(
+            f"File {row}x{col}_{type_num}_{file_type.capitalize()}.cir already exists - Skipping"
+        )
         return
+    logger.debug(
+        f"Beginning creation of {row}x{col}_{type_num}_{file_type.capitalize()}.cir"
+    )
     """Creates a LTSpiceXVII simulation file
 
     Takes in several arguments, all required for producing the output as expected. Depending on ``file_type`` provided,
@@ -265,7 +314,7 @@ def create_files(path: str = "."):
                 temp_sets += results
 
         # Begins set creation
-        print(f"Generating {dataset} for temperatures: {temp_sets}")
+        logger.info(f"Generating dataset {dataset} for temperatures: {temp_sets}")
         for temp in temp_sets:
             for row, col in file_sets:
                 local = pathlib.PurePath(path)
@@ -298,4 +347,8 @@ def create_files(path: str = "."):
 
 
 if __name__ == "__main__":
+    logger = set_logger(logger, "circuit_sim.log")
+    logger.info("Beginning Circuit Simulation [1.0.0]")
+
+    # Creates dataset (skips if dataset complete)
     create_files(".")
