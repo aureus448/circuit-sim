@@ -12,7 +12,7 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
+import logging
 import os
 import pathlib
 import re
@@ -24,7 +24,7 @@ from subprocess import Popen
 import ltspice
 import pandas as pd
 
-from circuit_sim.circuit_sim import logger
+logger = logging.getLogger(__file__)
 
 
 def run_ltspice(commands):
