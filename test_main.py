@@ -12,27 +12,9 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
-import configparser
 import logging
-import pathlib
-
-import pytest
 
 from circuit_sim import circuit_sim
-
-
-@pytest.fixture()
-def config():
-    config = configparser.ConfigParser()
-    config.read("circuit_sim/data_sets.ini")
-    data_name = [key for key in config.keys() if key != "DEFAULT"]
-    return data_name
-
-
-@pytest.fixture()
-def path():
-    path_ = pathlib.PurePath("Output/")
-    return path_
 
 
 def test_create_files():
