@@ -1,5 +1,6 @@
 ignore:
   - "circuit_sim/analysis.py"
+  - "simulate_module.py"
 coverage:
   status:
     project:
