@@ -20,8 +20,6 @@ from typing import List
 
 from circuit_sim.analysis import data_analysis, run_simulations
 
-logger = logging.getLogger(__file__)
-
 
 def set_logger(log: logging.Logger, name: str):
     """Set up of logging program based on a provided logging.Logger
@@ -75,7 +73,7 @@ def list_types(max_cells: List[int], sets_to_make=None) -> List[List[int]]:
                 elif cellA * cellB == i:
                     if f"{cellA}x{cellB}" not in sets_to_make and sets_to_make:
                         continue
-                    logger.info(f"[{i}] Will Design Solar Arrangement {cellA}x{cellB}")
+                    logging.info(f"[{i}] Will Design Solar Arrangement {cellA}x{cellB}")
                     sets.append([cellA, cellB])
     return sets
 
@@ -108,11 +106,11 @@ def create_file(
     """
     # Do not duplicate work
     if os.path.exists(f"{file_path}/{row}x{col}_{num_shade}_Shading.cir"):
-        logger.debug(
+        logging.debug(
             f"File {row}x{col}_{num_shade}_Shading.cir already exists - Skipping"
         )
         return
-    logger.debug(f"Beginning creation of {row}x{col}_{num_shade}_Shading.cir")
+    logging.debug(f"Beginning creation of {row}x{col}_{num_shade}_Shading.cir")
     with open(
         f"{file_path}/{row}x{col}_{num_shade}_Shading.cir",
         "w+",
@@ -185,11 +183,11 @@ def create_special_file(
     if os.path.exists(
         f"{file_path}/{row}x{col}_{type_num}_{file_type.capitalize()}.cir"
     ):
-        logger.debug(
+        logging.debug(
             f"File {row}x{col}_{type_num}_{file_type.capitalize()}.cir already exists - Skipping"
         )
         return
-    logger.debug(
+    logging.debug(
         f"Beginning creation of {row}x{col}_{type_num}_{file_type.capitalize()}.cir"
     )
     """Creates a LTSpiceXVII simulation file
@@ -279,7 +277,7 @@ def create_files(path: str = "."):
     """
     config = configparser.ConfigParser()
     config.read(
-        pathlib.PurePath(__file__).parent.joinpath(pathlib.PurePath("data_sets.ini"))
+        pathlib.PurePath(__file__).parent.joinpath(pathlib.PurePath("../data_sets.ini"))
     )
 
     # Reads config file ``data_sets.ini`` and provides the requested data sets for set creation
@@ -308,7 +306,7 @@ def create_files(path: str = "."):
                 temp_sets += results
 
         # Begins set creation
-        logger.info(f"Generating dataset {dataset} for temperatures: {temp_sets}")
+        logging.info(f"Generating dataset {dataset} for temperatures: {temp_sets}")
         for temp in temp_sets:
             for row, col in file_sets:
                 local = pathlib.PurePath(path)
@@ -317,7 +315,7 @@ def create_files(path: str = "."):
                     pathlib.PurePath(f"Output/{high}-{low}/Temp{temp}/{row}x{col}")
                 )
                 os.makedirs(
-                    local.joinpath(filepath),
+                    filepath,
                     exist_ok=True,
                 )
                 with open(
@@ -325,7 +323,7 @@ def create_files(path: str = "."):
                         pathlib.PurePath("cell_2.lib")
                     ),
                     "r",
-                ) as file_r, open(filepath.joinpath("cell_2.lib"), "w") as f:
+                ) as file_r, open(filepath.joinpath("cell_2.lib"), "w+") as f:
                     f.write(file_r.read())  # write out the file to correct pathing
                 for num in range(row * col + 1):
                     create_file(filepath, row, col, num, high, low, temp)
@@ -341,11 +339,11 @@ def create_files(path: str = "."):
 
 
 if __name__ == "__main__":
-    logger = set_logger(logger, "circuit_sim.log")
-    logger.info("Beginning Circuit Simulation [1.0.0]")
+    logger = set_logger(logging.getLogger(), "circuit_sim.log")
+    logging.info("Beginning Circuit Simulation [1.0.0]")
     # Creates dataset (skips if dataset complete)
-    create_files(".")
-    logger.info("Dataset generation complete - Beginning Simulations")
+    create_files("..")
+    logging.info("Dataset generation complete - Beginning Simulations")
     # Read in datasets to make
     config = configparser.ConfigParser()
     config.read("data_sets.ini")

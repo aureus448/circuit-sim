@@ -14,7 +14,8 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import logging
 
-from circuit_sim import circuit_sim
+# import _paths  # noqa: W0611
+import circuit_sim
 
 
 def test_create_files():

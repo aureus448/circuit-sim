@@ -24,8 +24,6 @@ from subprocess import Popen
 import ltspice
 import pandas as pd
 
-logger = logging.getLogger(__file__)
-
 
 def run_ltspice(commands):
     procs = Queue()
@@ -68,15 +66,15 @@ def run_simulations(path: pathlib.PurePath, data_name):
     folders_to_check = ["1x10", "2x4", "2x5", "3x3", "4x2", "5x2", "10x1"]
     for dataset in os.scandir(path):
         if dataset.is_dir() and dataset.name in data_name:  # ensure directory not file
-            logger.info(f"Running Data Analysis on {dataset.name}")
+            logging.info(f"Running Data Analysis on {dataset.name}")
             for dir in os.scandir(dataset.path):
                 if dir.is_dir():  # ensure directory not file
-                    logger.info(f"Main Directory: {dataset.name}/{dir.name}")
+                    logging.info(f"Main Directory: {dataset.name}/{dir.name}")
                     for sub_dir in os.scandir(dir.path):
                         if (
                             sub_dir.is_dir() and sub_dir.name in folders_to_check
                         ):  # ensure directory not file
-                            logger.info(
+                            logging.info(
                                 f"Sub Directory: {dataset.name}/{dir.name}/{sub_dir.name} [{dataset.name}]"
                             )
                             for file in os.scandir(sub_dir.path):
@@ -85,7 +83,7 @@ def run_simulations(path: pathlib.PurePath, data_name):
                                     if not os.path.exists(
                                         file.path.replace(".cir", ".raw")
                                     ):
-                                        logger.info(
+                                        logging.info(
                                             f"Queueing LTspiceXVII on {file.name} [{dataset.name}]"
                                         )
                                         commands.append(
@@ -93,17 +91,17 @@ def run_simulations(path: pathlib.PurePath, data_name):
                                             f"{file.path}"
                                         )
                                     else:
-                                        logger.debug(
+                                        logging.debug(
                                             f"Skipping {file.name} - "
                                             f"{file.name.replace('.cir', '.raw')} already exists"
                                         )
-    logger.info(
+    logging.info(
         f"{len(commands)} LTSpiceXVII runs have been queued - Expect a runtime of "
         f"{len(commands) * 0.3 + 8:.2f} seconds ({(len(commands) * 0.3 + 8) // 60:.0f} minutes, "
         f"{(len(commands) * 0.3 + 8) % 60:.2f} seconds)"
     )
     if len(commands) > 0:
-        logger.info("Beginning run in 10 seconds...")
+        logging.info("Beginning run in 10 seconds...")
         time.sleep(10)
         run_ltspice(commands)
 
@@ -112,21 +110,21 @@ def data_analysis(path: pathlib.PurePath, data_name):
     for dataset in os.scandir(path):
         i = 1  # tracker of how many circuit(s) are run (total to support full set combination)
         if dataset.is_dir() and dataset.name in data_name:  # ensure directory not file
-            logger.info(f"Running Data Analysis on {dataset.name}")
+            logging.info(f"Running Data Analysis on {dataset.name}")
             for dir in os.scandir(dataset.path):
                 if dir.is_dir():  # ensure directory not file
-                    logger.info(f"Main Directory: {dataset.name}/{dir.name}")
+                    logging.info(f"Main Directory: {dataset.name}/{dir.name}")
                     gigantor = pd.DataFrame()
                     for sub_dir in os.scandir(dir.path):
                         if sub_dir.is_dir():  # ensure directory not file
-                            logger.info(
+                            logging.info(
                                 f"Generating for: {dataset.name}/{dir.name}/{sub_dir.name} [{dataset.name}]"
                             )
                             for file in os.scandir(
                                 sub_dir.path
                             ):  # rescan directory after modifying and creating .raw files
                                 if file.is_file() and file.name.endswith("raw"):
-                                    logger.debug(
+                                    logging.debug(
                                         f"Creating Datasheet Output from {file.name}"
                                     )
                                     lt_data = ltspice.Ltspice(file.path)
@@ -161,7 +159,9 @@ def data_analysis(path: pathlib.PurePath, data_name):
                                     ] = f"{((cells / (contentList[0] * contentList[1])) * 100):.2f}"
                                     out["Solar Panel ID"] = i
                                     out["IsShade"] = 1 if cells > 0 else 0
-                                    gigantor = gigantor.append(out, ignore_index=True)
+                                    gigantor = pd.concat(
+                                        [gigantor, out], ignore_index=True
+                                    )
                                     i += 1  # increment number of solar panels run on
                     os.makedirs(f"Output/Data/{dataset.name}/", exist_ok=True)
                     gigantor.to_csv(
