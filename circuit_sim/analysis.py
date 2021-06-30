@@ -107,17 +107,21 @@ def run_simulations(path: pathlib.PurePath, data_name):
 
 
 def data_analysis(path: pathlib.PurePath, data_name):
+    i = 1  # tracker of how many circuit(s) are run (total to support full set combination)
+    dataframe_list = []
     for dataset in os.scandir(path):
-        i = 1  # tracker of how many circuit(s) are run (total to support full set combination)
         if dataset.is_dir() and dataset.name in data_name:  # ensure directory not file
             logging.info(f"Running Data Analysis on {dataset.name}")
             for dir in os.scandir(dataset.path):
                 if dir.is_dir():  # ensure directory not file
-                    logging.info(f"Main Directory: {dataset.name}/{dir.name}")
+                    logging.debug(f"Main Directory: {dataset.name}/{dir.name}")
+                    logging.info(
+                        f"Generating data analysis for: {dataset.name} [{dir.name}]"
+                    )
                     gigantor = pd.DataFrame()
                     for sub_dir in os.scandir(dir.path):
                         if sub_dir.is_dir():  # ensure directory not file
-                            logging.info(
+                            logging.debug(
                                 f"Generating for: {dataset.name}/{dir.name}/{sub_dir.name} [{dataset.name}]"
                             )
                             for file in os.scandir(
@@ -135,8 +139,12 @@ def data_analysis(path: pathlib.PurePath, data_name):
 
                                     out = pd.DataFrame()
                                     out["Voltage (V)"] = vbias
-                                    out["Current (A)"] = I_Vbias
-                                    out["Power (W)"] = P_Vbias
+                                    out["Current (A)"] = list(
+                                        map("{:.2f}".format, I_Vbias)
+                                    )
+                                    out["Power (W)"] = list(
+                                        map("{:.2f}".format, P_Vbias)
+                                    )
 
                                     filename = file.name.split(".")[0] + ".txt"
                                     rx = re.compile(r"-?\d+(?:\.\d+)?")
@@ -164,7 +172,17 @@ def data_analysis(path: pathlib.PurePath, data_name):
                                     )
                                     i += 1  # increment number of solar panels run on
                     os.makedirs(f"Output/Data/{dataset.name}/", exist_ok=True)
-                    gigantor.to_csv(
-                        f"Output/Data/{dataset.name}/{dataset.name}-{dir.name}.csv",
-                        index=False,
-                    )
+                    if not os.path.exists(
+                        f"Output/Data/{dataset.name}/{dataset.name}-{dir.name}.csv"
+                    ):
+                        logging.debug(f"Creating file {dataset.name}-{dir.name}.csv")
+                        gigantor.to_csv(
+                            f"Output/Data/{dataset.name}/{dataset.name}-{dir.name}.csv",
+                            index=False,
+                        )
+                    dataframe_list.append(gigantor)
+    logging.info("Creating complete dataframe - this will take a bit")
+    # Concatenate everything
+    mega_set = pd.concat(dataframe_list, ignore_index=True, copy=False)
+    mega_set.to_csv("Output/mothership.csv")
+    logging.info("Dataframe finished - Analysis complete")
