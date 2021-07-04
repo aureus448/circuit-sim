@@ -12,6 +12,13 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
+Analysis functions for LTspiceXVII simulation running and analysis
+
+Functions within this file are used to simulate the files using ``LTspiceXVII.exe``.
+It is expected that LTspiceXVII is installed normally and not in a different directory
+from a normal installation, otherwise this script will not work.
+"""
 import logging
 import os
 import pathlib
@@ -20,13 +27,28 @@ import subprocess
 import time
 from queue import Queue
 from subprocess import Popen
+from typing import List
 
 import ltspice
 import pandas as pd
 
 
-def run_ltspice(commands):
-    procs = Queue()
+def run_ltspice(commands: List[str]) -> None:
+    """Runs LTspiceXVII based on a list of commands provided
+
+    Warning:
+        No warranty is expressed or implied. This function directly accesses the os shell,
+        and therefore will run anything sent in the list regardless of expected privilege.
+        There is no raise for privileges, so is executed on a user-level (non-sudo) only.
+
+    Args:
+        commands (list of strings): Shell-executable commands to run
+
+            This function should be run only through run_simulations, but can be run
+            outside of run_simulations if that is desired for testing purposes or forced
+            shell command execution.
+    """
+    procs: Queue = Queue()
     s = subprocess.STARTUPINFO(
         dwFlags=subprocess.STARTF_USESHOWWINDOW, wShowWindow=subprocess.SW_HIDE
     )
@@ -53,14 +75,18 @@ def run_ltspice(commands):
             procs.put(process)  # not ready-put back in queue (at end)
 
 
-def run_simulations(path: pathlib.PurePath, data_name):
-    """Queues simulations to be run
+def run_simulations(path: pathlib.PurePath, data_name: List[str]) -> None:
+    """Queues simulations to be run based off of a given path
+
+    The path is expected to contain several simulation files ``*.cir`` and is best run
+    on files created by its sister function ``create_files``.
 
     Args:
-        name:
+        path (OS Path-like object): Directory path to simulation files
+        data_name (list of strings): List of directory names containing simulation data to check
 
-    Returns:
-
+            The format of directory paths expected is similar to what is created by function
+            ``create_files``.
     """
     commands = []
     folders_to_check = ["1x10", "2x4", "2x5", "3x3", "4x2", "5x2", "10x1"]
@@ -106,7 +132,19 @@ def run_simulations(path: pathlib.PurePath, data_name):
         run_ltspice(commands)
 
 
-def data_analysis(path: pathlib.PurePath, data_name):
+def data_analysis(path: pathlib.PurePath, data_name) -> None:
+    """Performs data analysis of LTspiceXVII simulation results
+
+    Expects ``*.raw`` files produced by running of LTspiceXVII either manually
+    or through sister function ``run_simulations``.
+
+    Args:
+        path (OS Path-like object): Directory path to simulation results
+        data_name (list of strings): List of directory names containing simulation data to check
+
+            The format of directory paths expected is similar to what is created by function
+            ``create_files``.
+    """
     i = 1  # tracker of how many circuit(s) are run (total to support full set combination)
     dataframe_list = []
     for dataset in os.scandir(path):
