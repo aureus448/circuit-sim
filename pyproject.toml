@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "circuit_sim"
-version = "0.9"
+version = "1.0"
 description = "Circuit Simulation dataset creation"
 authors = ["Nate Ruppert <nate.ruppert@csu.fullerton.edu>"]
 
