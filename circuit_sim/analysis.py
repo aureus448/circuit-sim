@@ -138,6 +138,11 @@ def data_analysis(path: pathlib.PurePath, data_name) -> None:
     Expects ``*.raw`` files produced by running of LTspiceXVII either manually
     or through sister function ``run_simulations``.
 
+    Note:
+        All analysis files are produced in a folder ``Output/`` within the respective folder structure
+        of the input files. At the end of all folder analysis, a final file called ``mothership.csv``
+        is produced containing all data of the previous files.
+
     Args:
         path (OS Path-like object): Directory path to simulation results
         data_name (list of strings): List of directory names containing simulation data to check

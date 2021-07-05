@@ -11,7 +11,17 @@
 #
 #      You should have received a copy of the GNU General Public License
 #      along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
+Main script for circuit_sim allowing for circuit creation, simulation and analysis
 
+Supports the creation of circuit simulation files based upon a provided ``data_sets.ini``
+file and is designed for development of a very specific circuit for use in a research project
+I am apart of at CSUF.
+
+Please see the provided __main__ function for usage of this program/library, or use ``simulate_module.py``,
+another file that directly follows the __main__ function but is designed to use this script and the analysis
+script together as a library (circuit_sim).
+"""
 import configparser
 import logging
 import os
@@ -91,7 +101,7 @@ def create_file(
 
     Takes in several arguments, all required for producing the output as expected.
 
-    Notes:
+    Note:
         "Full" and "Shade" intensity refer to whether the cell is considered to be in full view
         of sunlight (Highest possible efficiency) or in the shade (Lower efficiency than Highest but not 0).
 
@@ -179,6 +189,32 @@ def create_special_file(
     file_type: str,
     type_num: int,
 ) -> None:
+    """Creates a 'special' LTSpiceXVII simulation file
+
+    Takes in several arguments, all required for producing the output as expected.
+
+    Note:
+        "Full" and "Shade" intensity refer to whether the cell is considered to be in full view
+        of sunlight (Highest possible efficiency) or in the shade (Lower efficiency than Highest but not 0).
+
+    Warning:
+        Logic on amount of file_type (``Short`` or ``Open`` circuit) must be determined programmatically before
+        calling of this function. This function will create files that shouldn't exist or are duplicative of
+        previous results otherwise.
+
+        Example:
+            Providing a 1x10 [``1 Series x 10 parallel``] file any "short"
+            file type would short the entire circuit and produce useless results
+
+    Args:
+        file_path (pathlib.PurePath): Location of where the file will be placed
+        row (int): Number of cells per column
+        col (int): Number of columns per circuit
+        full_volt (int): Value (voltage) of "Full" intensity
+        temp (int): Temperature of circuit
+        file_type (str): Type of file being produced - allowed to be one of two values: "open" or "short"
+        type_num (int): Amount of the ``file_type`` provided to create
+    """
     # Do not duplicate work
     if os.path.exists(
         f"{file_path}/{row}x{col}_{type_num}_{file_type.capitalize()}.cir"
@@ -196,7 +232,7 @@ def create_special_file(
     the program will either short cell(s) by adding a 0 value dc source across the cell terminals, or open cell
     column(s) by removing all cells in a column from file circuit creation.
 
-    Notes:
+    Note:
         "Full" and "Shade" intensity refer to whether the cell is considered to be in full view
             of sunlight (Highest possible efficiency) or in the shade (Lower efficiency than Highest but not 0).
             "Shade" is not used for special file creation.
