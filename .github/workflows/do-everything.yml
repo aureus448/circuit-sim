@@ -1,0 +1,95 @@
+name: Do Everything At Once Workflow
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+
+jobs:
+  check_date:
+    runs-on: ubuntu-latest
+    name: Check For Recent Commits
+    outputs:
+      should_run: ${{ steps.should_run.outputs.should_run }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: print latest_commit
+        run: echo ${{ github.sha }}
+
+      - id: should_run
+        continue-on-error: true
+        name: check latest commit is less than a day
+        if: ${{ github.event_name == 'schedule' }}
+        run: test -z $(git rev-list  --after="24 hours"  ${{ github.sha }}) && echo "::set-output name=should_run::false"
+  build_sphinx_job:
+    needs: check_date
+    if: ${{ needs.check_date.outputs.should_run != 'false' }}
+    name: Build Documentation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Setup Python
+        uses: actions/setup-python@master
+        with:
+          python-version: 3.9
+      - name: Setup Build Environment
+        run: |
+          pip install -r requirements-dev.txt
+      - name: Run build script for Sphinx pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: "chmod +x docs/build.sh
+           && docs/build.sh"
+        shell: bash
+  code_coverage:
+    needs: check_date
+    if: ${{ needs.check_date.outputs.should_run != 'false' }}
+    name: Check Test Coverage
+    runs-on: ubuntu-latest
+    env:
+      PYTHON: '3.9'
+      OS: ubuntu-latest
+      URI: ${{ secrets.URI }}
+      API: ${{ secrets.API }}
+      USER: ${{ secrets.USER }}
+      urls: ${{ secrets.URLS }}
+    steps:
+      - uses: actions/checkout@master
+      - name: Setup Python
+        uses: actions/setup-python@master
+        with:
+          python-version: 3.9
+      - name: Generate coverage report
+        run: |
+          pip install pytest pytest-cov
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pytest --cov=./ --cov-report=xml
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          env_vars: OS,PYTHON
+          fail_ci_if_error: true
+          path_to_write_report: ./coverage/codecov_report.txt
+          verbose: true
+  lint-codebase:
+    needs: check_date
+    if: ${{ needs.check_date.outputs.should_run != 'false' }}
+    name: Lint Code Base
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Lint Code Base
+        uses: docker://ghcr.io/github/super-linter:slim-v4
+        env:
+          VALIDATE_PYTHON_ISORT: false
+          VALIDATE_ALL_CODEBASE: true
+          DEFAULT_BRANCH: main
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
