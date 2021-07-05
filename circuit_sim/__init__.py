@@ -12,7 +12,11 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
-from circuit_sim.analysis import *
-from circuit_sim.circuit_sim import *
+from circuit_sim.analysis import data_analysis, run_simulations
+from circuit_sim.circuit_sim import create_files, set_logger
+
+if run_simulations and data_analysis and create_files and set_logger:
+    # Flake8 bypass on "import unused" F401
+    pass
 
 name = "circuit_sim"

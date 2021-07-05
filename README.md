@@ -9,6 +9,8 @@ A circuit simulation library designed to perform the following tasks:
 - Run LTSpiceXVII on each provided `*.cir` file *automatically* without user interaction
 - Collect LTSpiceXVII `*.raw` files using the Python `ltpsice` library and use Pandas for data analysis on outputs of simulation runs
 
-This library is being designed and developed specifically for a research project I participate in for CSUF related to Solar Drone cell design and implementation testing, and therefore is highly specific to my use case. However, the library is provided as-is for future developers to modify and use for their own circuit design purposes potentially. For example, the library's ability to simulate LTSpiceXVII files concurrently could be used separately from all other library uses.
+This library is being designed and developed specifically for a research project I participate in for CSUF related to Solar Drone cell design and implementation testing, and therefore is highly specific to my use case.
+However, the library is provided as-is for future developers to modify and use for their own circuit design purposes potentially.
+For example, the library's ability to simulate LTSpiceXVII files concurrently could be used separately from all other library uses.
 
 However you intend to use it, enjoy.

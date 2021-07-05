@@ -153,19 +153,19 @@ def data_analysis(path: pathlib.PurePath, data_name) -> None:
     i = 1  # tracker of how many circuit(s) are run (total to support full set combination)
     dataframe_list = []
     for dataset in os.scandir(path):
-        if dataset.is_dir() and dataset.name in data_name:  # ensure directory not file
+        if dataset.is_dir() and dataset.name in data_name:
             logging.info(f"Running Data Analysis on {dataset.name}")
-            for dir in os.scandir(dataset.path):
-                if dir.is_dir():  # ensure directory not file
-                    logging.debug(f"Main Directory: {dataset.name}/{dir.name}")
+            for directory in os.scandir(dataset.path):
+                if directory.is_dir():
+                    logging.debug(f"Main Directory: {dataset.name}/{directory.name}")
                     logging.info(
-                        f"Generating data analysis for: {dataset.name} [{dir.name}]"
+                        f"Generating data analysis for: {dataset.name} [{directory.name}]"
                     )
                     gigantor = pd.DataFrame()
-                    for sub_dir in os.scandir(dir.path):
-                        if sub_dir.is_dir():  # ensure directory not file
+                    for sub_dir in os.scandir(directory.path):
+                        if sub_dir.is_dir():
                             logging.debug(
-                                f"Generating for: {dataset.name}/{dir.name}/{sub_dir.name} [{dataset.name}]"
+                                f"Generating for: {dataset.name}/{directory.name}/{sub_dir.name} [{dataset.name}]"
                             )
                             for file in os.scandir(
                                 sub_dir.path
@@ -196,7 +196,9 @@ def data_analysis(path: pathlib.PurePath, data_name) -> None:
                                     cells = (
                                         contentList[2] if len(contentList) > 2 else 0
                                     )
-                                    temp = list(map(int, rtemp.findall(dir.name)))[0]
+                                    temp = list(
+                                        map(int, rtemp.findall(directory.name))
+                                    )[0]
                                     out["Full Voltage"] = dataset.name.split("-")[0]
                                     out["Shade Voltage"] = dataset.name.split("-")[1]
                                     out["Temperature"] = temp
@@ -216,11 +218,13 @@ def data_analysis(path: pathlib.PurePath, data_name) -> None:
                                     i += 1  # increment number of solar panels run on
                     os.makedirs(f"Output/Data/{dataset.name}/", exist_ok=True)
                     if not os.path.exists(
-                        f"Output/Data/{dataset.name}/{dataset.name}-{dir.name}.csv"
+                        f"Output/Data/{dataset.name}/{dataset.name}-{directory.name}.csv"
                     ):
-                        logging.debug(f"Creating file {dataset.name}-{dir.name}.csv")
+                        logging.debug(
+                            f"Creating file {dataset.name}-{directory.name}.csv"
+                        )
                         gigantor.to_csv(
-                            f"Output/Data/{dataset.name}/{dataset.name}-{dir.name}.csv",
+                            f"Output/Data/{dataset.name}/{dataset.name}-{directory.name}.csv",
                             index=False,
                         )
                     dataframe_list.append(gigantor)

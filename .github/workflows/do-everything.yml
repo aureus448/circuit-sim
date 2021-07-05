@@ -90,6 +90,7 @@ jobs:
         uses: docker://ghcr.io/github/super-linter:slim-v4
         env:
           VALIDATE_PYTHON_ISORT: false
+          VALIDATE_PYTHON_MYPY: false # throws errors due to OS-specific LTSpice subprocess
           VALIDATE_ALL_CODEBASE: true
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
