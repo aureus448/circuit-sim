@@ -11,3 +11,6 @@ updates:
       interval: "monthly"
     reviewers:
       - "aureus448"
+    ignore:
+      - dependency-name: "*"
+        update-types: [ "version-update:semver-patch" ]
