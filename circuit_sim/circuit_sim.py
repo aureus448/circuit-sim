@@ -364,11 +364,13 @@ def create_files(path: str = "."):
                 for num in range(row * col + 1):
                     create_file(filepath, row, col, num, high, low, temp)
                     if num > 0:
+                        # Open tracks: m - 1 where m [col] is cells in parallel
                         if num < col:
                             create_special_file(
                                 filepath, row, col, high, temp, "open", num
                             )
-                        if num <= col:
+                        # Short tracks: m*n-m where m [col] is cells in parallel and n [row] is cells in series
+                        if num <= row * col - col:
                             create_special_file(
                                 filepath, row, col, high, temp, "short", num
                             )
