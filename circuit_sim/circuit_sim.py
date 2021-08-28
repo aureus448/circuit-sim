@@ -322,7 +322,7 @@ def create_files(path: str = "."):
     ]
     # Collects the sets that will be performed based on passed parameters
     file_sets = list_types(
-        [8, 9, 10], ["1x10", "2x4", "2x5", "3x3", "4x2", "5x2", "10x1"]
+        [8, 9, 10], ["1x10", "2x4", "2x5", "1x9", "3x3", "9x1", "4x2", "5x2", "10x1"]
     )
 
     for dataset, temps in data_sets:

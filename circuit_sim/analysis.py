@@ -52,27 +52,27 @@ def run_ltspice(commands: List[str]) -> None:
     s = subprocess.STARTUPINFO(
         dwFlags=subprocess.STARTF_USESHOWWINDOW, wShowWindow=subprocess.SW_HIDE
     )
-    sleep = 0.3
+    sleep = 0.1
     for i in range(len(commands)):
         procs.put((Popen(commands[i], startupinfo=s), time.time()))
         time.sleep(sleep)
-        # Begins checking after at least X seconds has passed
-        if not procs.empty() and sleep * i > 8:
-            process = procs.get()
-            if time.time() - process[1] > 8:
-                process[0].terminate()
-            else:
-                procs.put(
-                    process
-                )  # not ready-put back in queue (at end) and continue looping
-                continue
+        # # Begins checking after at least X seconds has passed
+        # if not procs.empty() and sleep * i > 8:
+        #     process = procs.get()
+        #     if time.time() - process[1] > 8:
+        #         process[0].terminate()
+        #     else:
+        #         procs.put(
+        #             process
+        #         )  # not ready-put back in queue (at end) and continue looping
+        #         continue
 
-    while not procs.empty():
-        process = procs.get()
-        if time.time() - process[1] > 8:
-            process[0].terminate()
-        else:
-            procs.put(process)  # not ready-put back in queue (at end)
+    # while not procs.empty():
+    #     process = procs.get()
+    #     if time.time() - process[1] > 8:
+    #         process[0].terminate()
+    #     else:
+    #         procs.put(process)  # not ready-put back in queue (at end)
 
 
 def run_simulations(path: pathlib.PurePath, data_name: List[str]) -> None:
@@ -89,18 +89,18 @@ def run_simulations(path: pathlib.PurePath, data_name: List[str]) -> None:
             ``create_files``.
     """
     commands = []
-    folders_to_check = ["1x10", "2x4", "2x5", "3x3", "4x2", "5x2", "10x1"]
+    folders_to_check = ["1x10", "2x4", "2x5", "1x9", "3x3", "9x1", "4x2", "5x2", "10x1"]
     for dataset in os.scandir(path):
         if dataset.is_dir() and dataset.name in data_name:  # ensure directory not file
-            logging.info(f"Running Data Analysis on {dataset.name}")
+            logging.info(f"Running Run Check on {dataset.name}")
             for dir in os.scandir(dataset.path):
                 if dir.is_dir():  # ensure directory not file
-                    logging.info(f"Main Directory: {dataset.name}/{dir.name}")
+                    logging.debug(f"Main Directory: {dataset.name}/{dir.name}")
                     for sub_dir in os.scandir(dir.path):
                         if (
                             sub_dir.is_dir() and sub_dir.name in folders_to_check
                         ):  # ensure directory not file
-                            logging.info(
+                            logging.debug(
                                 f"Sub Directory: {dataset.name}/{dir.name}/{sub_dir.name} [{dataset.name}]"
                             )
                             for file in os.scandir(sub_dir.path):
@@ -113,7 +113,7 @@ def run_simulations(path: pathlib.PurePath, data_name: List[str]) -> None:
                                             f"Queueing LTspiceXVII on {file.name} [{dataset.name}]"
                                         )
                                         commands.append(
-                                            r"C:\Program Files\LTC\LTspiceXVII\XVIIx64.exe -Run "
+                                            r"C:\Program Files\LTC\LTspiceXVII\XVIIx64.exe -b -Run "
                                             f"{file.path}"
                                         )
                                     else:
@@ -123,13 +123,15 @@ def run_simulations(path: pathlib.PurePath, data_name: List[str]) -> None:
                                         )
     logging.info(
         f"{len(commands)} LTSpiceXVII runs have been queued - Expect a runtime of "
-        f"{len(commands) * 0.3 + 8:.2f} seconds ({(len(commands) * 0.3 + 8) // 60:.0f} minutes, "
-        f"{(len(commands) * 0.3 + 8) % 60:.2f} seconds)"
+        f"{len(commands) * 0.1:.2f} seconds ({(len(commands) * 0.1) // 60:.0f} minutes, "
+        f"{(len(commands) * 0.1) % 60:.2f} seconds)"
     )
     if len(commands) > 0:
-        logging.info("Beginning run in 10 seconds...")
-        time.sleep(10)
+        # logging.info("Beginning run in 10 seconds...")
+        # time.sleep(10)
+        start = time.perf_counter()
         run_ltspice(commands)
+        logging.info(f"Done in {time.perf_counter()-start:.2f}s")
 
 
 def data_analysis(path: pathlib.PurePath, data_name) -> None:
@@ -152,16 +154,30 @@ def data_analysis(path: pathlib.PurePath, data_name) -> None:
     """
     i = 1  # tracker of how many circuit(s) are run (total to support full set combination)
     dataframe_list = []
+    dataframe_list_special = []
+    name_list = []
+    bad_data = False
     for dataset in os.scandir(path):
         if dataset.is_dir() and dataset.name in data_name:
             logging.info(f"Running Data Analysis on {dataset.name}")
+            temp_list = []
+            temp_list_special = []
             for directory in os.scandir(dataset.path):
                 if directory.is_dir():
                     logging.debug(f"Main Directory: {dataset.name}/{directory.name}")
                     logging.info(
                         f"Generating data analysis for: {dataset.name} [{directory.name}]"
                     )
-                    gigantor = pd.DataFrame()
+                    gigantor = pd.DataFrame()  # normal
+                    specialdf = pd.DataFrame()  # special
+                    # check for special as that is last file created for each set
+                    if os.path.exists(
+                        f"Output/Data/{dataset.name}/{dataset.name}-{directory.name}-Special.csv"
+                    ):
+                        logging.debug(
+                            f"Data for set {dataset.name}-{directory.name} already exists"
+                        )
+                        continue  # skip already done sets
                     for sub_dir in os.scandir(directory.path):
                         if sub_dir.is_dir():
                             logging.debug(
@@ -174,11 +190,33 @@ def data_analysis(path: pathlib.PurePath, data_name) -> None:
                                     logging.debug(
                                         f"Creating Datasheet Output from {file.name}"
                                     )
-                                    lt_data = ltspice.Ltspice(file.path)
-                                    lt_data.parse()
+
+                                    # err = False
+                                    try:
+                                        lt_data = ltspice.Ltspice(file.path)
+                                        lt_data.parse()
+                                    except (
+                                        ltspice.FileSizeNotMatchException,
+                                        IndexError,
+                                    ):  # Both are corrupted file
+                                        logging.error(
+                                            f"File {file.name} needs to be re-simulated "
+                                            f"- Re-run simulation code"
+                                        )
+                                        os.remove(file.path)
+                                        bad_data = True  # don't create final report and warn user
+                                        continue
+
                                     vbias = lt_data.get_data("vbias")
+
+                                    # Totals for full array combined (Thevenins)
                                     I_Vbias = lt_data.get_data("I(vbias)")
                                     P_Vbias = vbias * I_Vbias
+
+                                    # Cell-level data
+                                    # [_ for _ in lt_data.getVariableNames() if 'Virrad' in _]
+                                    # Individual current for each cell?
+                                    # This current matches Ivbias [_ for _ in lt_data.getVariableNames() if ':300' in _]
 
                                     out = pd.DataFrame()
                                     out["Voltage (V)"] = vbias
@@ -206,30 +244,104 @@ def data_analysis(path: pathlib.PurePath, data_name) -> None:
                                     out["# Of Cells"] = contentList[0] * contentList[1]
                                     out["Series Cells"] = contentList[0]
                                     out["Parallel Cells"] = contentList[1]
-                                    out["Shaded Cells"] = cells
-                                    out[
-                                        "Shading %"
-                                    ] = f"{((cells / (contentList[0] * contentList[1])) * 100):.2f}"
-                                    out["Solar Panel ID"] = i
-                                    out["IsShade"] = 1 if cells > 0 else 0
-                                    gigantor = pd.concat(
-                                        [gigantor, out], ignore_index=True
+
+                                    special = False
+                                    if "Shading" not in filename:
+                                        special = True
+
+                                    out["Type"] = (
+                                        "Open"
+                                        if special and "Open" in filename
+                                        else "Short"
+                                        if special
+                                        else "Shaded"
                                     )
+                                    out["Shaded Cells"] = cells if not special else 0
+                                    out["Shading %"] = (
+                                        f"{((cells / (contentList[0] * contentList[1])) * 100):.2f}"
+                                        if not special
+                                        else 0
+                                    )
+                                    out["IsShade"] = (
+                                        1 if cells > 0 and not special else 0
+                                    )
+
+                                    out["Solar Panel ID"] = i
+
+                                    if special:
+                                        specialdf = pd.concat(
+                                            [specialdf, out], ignore_index=True
+                                        )
+                                    else:
+                                        gigantor = pd.concat(
+                                            [gigantor, out], ignore_index=True
+                                        )
                                     i += 1  # increment number of solar panels run on
                     os.makedirs(f"Output/Data/{dataset.name}/", exist_ok=True)
-                    if not os.path.exists(
+
+                    logging.debug(f"Creating file {dataset.name}-{directory.name}.csv")
+                    pd.concat([gigantor, specialdf], ignore_index=True).to_csv(
                         f"Output/Data/{dataset.name}/{dataset.name}-{directory.name}.csv"
-                    ):
-                        logging.debug(
-                            f"Creating file {dataset.name}-{directory.name}.csv"
-                        )
-                        gigantor.to_csv(
-                            f"Output/Data/{dataset.name}/{dataset.name}-{directory.name}.csv",
-                            index=False,
-                        )
-                    dataframe_list.append(gigantor)
-    logging.info("Creating complete dataframe - this will take a bit")
+                    )
+                    # gigantor.to_csv(
+                    #     f"Output/Data/{dataset.name}/{dataset.name}-{directory.name}-Shaded.csv",
+                    #     index=False,
+                    # )
+                    # specialdf.to_csv(
+                    #     f"Output/Data/{dataset.name}/{dataset.name}-{directory.name}-Special.csv",
+                    #     index=False,
+                    # )
+                    temp_list.append(gigantor)
+                    temp_list_special.append(specialdf)
+
+            if len(temp_list) > 0:
+                logging.info("Creating set dataframe")
+                mega_set = pd.concat(temp_list, ignore_index=True, copy=False)
+                mega_set.to_csv(f"Output/Data/{dataset.name}-Shading.csv")
+                mega_set_special = pd.concat(
+                    temp_list_special, ignore_index=True, copy=False
+                )
+                mega_set_special.to_csv(f"Output/Data/{dataset.name}-Special.csv")
+                dataframe_list.append(mega_set)
+                dataframe_list_special.append(mega_set_special)
+                name_list.append(f"{dataset.name}")
+                # Create subset xlsx
+                with pd.ExcelWriter(f"Output/Data/{dataset.name}.xlsx") as writer:
+                    mega_set.to_excel(writer, sheet_name=f"{dataset.name}-Shading")
+                    mega_set_special.to_excel(
+                        writer, sheet_name=f"{dataset.name}-Special"
+                    )
+            elif os.path.exists(f"Output/Data/{dataset.name}-Special.csv"):
+                mega_set = pd.read_csv(f"Output/Data/{dataset.name}-Shading.csv")
+                mega_set_special = pd.read_csv(
+                    f"Output/Data/{dataset.name}-Special.csv"
+                )
+                dataframe_list.append(mega_set)
+                dataframe_list_special.append(mega_set_special)
+                name_list.append(f"{dataset.name}")
+            else:
+                logging.error("Dataset missing! Something is wrong!")
+                bad_data = True
+
+    if bad_data:
+        logging.error(
+            "Issues were encountered while collecting simulation data - No final report will be generated. "
+            "Please re-run the tool to re-simulate the error data."
+        )
+        return
+    logging.info("Creating complete dataframe and .xlsx file - this will take a bit")
     # Concatenate everything
     mega_set = pd.concat(dataframe_list, ignore_index=True, copy=False)
-    mega_set.to_csv("Output/mothership.csv")
+    mega_set.to_csv("Output/all_cell_data-Shading.csv")
+    mega_set_special = pd.concat(dataframe_list_special, ignore_index=True, copy=False)
+    mega_set_special.to_csv("Output/all_cell_data-Shading.csv")
+    # print(name_list)
+    # print(dataframe_list)
+    with pd.ExcelWriter("Output/all_cell_data.xlsx") as writer:
+        for i in range(len(dataframe_list)):
+            print("Running on", name_list[i])
+            dataframe_list[i].to_excel(writer, sheet_name=f"{name_list[i]}-Shading")
+            dataframe_list_special[i].to_excel(
+                writer, sheet_name=f"{name_list[i]}-Special"
+            )
     logging.info("Dataframe finished - Analysis complete")
