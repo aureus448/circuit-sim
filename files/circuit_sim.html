@@ -1,0 +1,329 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>circuit_sim.py &mdash; circuit-sim 1.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="analysis.py" href="analysis.html" />
+    <link rel="prev" title="circuit-sim Documentation by @aureus448" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> circuit-sim
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Code Documentation:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">circuit_sim.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis.html">analysis.py</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">circuit-sim</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>circuit_sim.py</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/files/circuit_sim.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-circuit_sim.circuit_sim">
+<span id="circuit-sim-py"></span><h1>circuit_sim.py<a class="headerlink" href="#module-circuit_sim.circuit_sim" title="Permalink to this headline">¶</a></h1>
+<p>Main script for circuit_sim allowing for circuit creation, simulation and analysis</p>
+<p>Supports the creation of circuit simulation files based upon a provided <code class="docutils literal notranslate"><span class="pre">data_sets.ini</span></code>
+file and is designed for development of a very specific circuit for use in a research project
+I am apart of at CSUF.</p>
+<p>Please see the provided __main__ function for usage of this program/library, or use <code class="docutils literal notranslate"><span class="pre">simulate_module.py</span></code>,
+another file that directly follows the __main__ function but is designed to use this script and the analysis
+script together as a library (circuit_sim).</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="circuit_sim.circuit_sim.create_file">
+<span class="sig-prename descclassname"><span class="pre">circuit_sim.circuit_sim.</span></span><span class="sig-name descname"><span class="pre">create_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pathlib.PurePath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">row</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_shade</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">full_volt</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shade_volt</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#circuit_sim.circuit_sim.create_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a LTSpiceXVII simulation file</p>
+<p>Takes in several arguments, all required for producing the output as expected.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>“Full” and “Shade” intensity refer to whether the cell is considered to be in full view
+of sunlight (Highest possible efficiency) or in the shade (Lower efficiency than Highest but not 0).</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_path</strong> (<em>pathlib.PurePath</em>) – Location of where the file will be placed</p></li>
+<li><p><strong>row</strong> (<em>int</em>) – Number of cells per column</p></li>
+<li><p><strong>col</strong> (<em>int</em>) – Number of columns per circuit</p></li>
+<li><p><strong>num_shade</strong> (<em>int</em>) – Number of shaded cells in circuit</p></li>
+<li><p><strong>full_volt</strong> (<em>int</em>) – Value (voltage) of “Full” intensity</p></li>
+<li><p><strong>shade_volt</strong> (<em>int</em>) – Value (voltage) of “Shade” intensity</p></li>
+<li><p><strong>temp</strong> (<em>int</em>) – Temperature of circuit</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="circuit_sim.circuit_sim.create_files">
+<span class="sig-prename descclassname"><span class="pre">circuit_sim.circuit_sim.</span></span><span class="sig-name descname"><span class="pre">create_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'.'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuit_sim.circuit_sim.create_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a config file <code class="docutils literal notranslate"><span class="pre">data_sets.ini</span></code> develops all requested datasets for run via LTSpiceXVII</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – Path to output files (Defaults to exactly where command is run)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="circuit_sim.circuit_sim.create_special_file">
+<span class="sig-prename descclassname"><span class="pre">circuit_sim.circuit_sim.</span></span><span class="sig-name descname"><span class="pre">create_special_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pathlib.PurePath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">row</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">full_volt</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_type</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type_num</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#circuit_sim.circuit_sim.create_special_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a ‘special’ LTSpiceXVII simulation file</p>
+<p>Takes in several arguments, all required for producing the output as expected.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>“Full” and “Shade” intensity refer to whether the cell is considered to be in full view
+of sunlight (Highest possible efficiency) or in the shade (Lower efficiency than Highest but not 0).</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Logic on amount of file_type (<code class="docutils literal notranslate"><span class="pre">Short</span></code> or <code class="docutils literal notranslate"><span class="pre">Open</span></code> circuit) must be determined programmatically before
+calling of this function. This function will create files that shouldn’t exist or are duplicative of
+previous results otherwise.</p>
+<dl class="simple">
+<dt>Example:</dt><dd><p>Providing a 1x10 [<code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">Series</span> <span class="pre">x</span> <span class="pre">10</span> <span class="pre">parallel</span></code>] file any “short”
+file type would short the entire circuit and produce useless results</p>
+</dd>
+</dl>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_path</strong> (<em>pathlib.PurePath</em>) – Location of where the file will be placed</p></li>
+<li><p><strong>row</strong> (<em>int</em>) – Number of cells per column</p></li>
+<li><p><strong>col</strong> (<em>int</em>) – Number of columns per circuit</p></li>
+<li><p><strong>full_volt</strong> (<em>int</em>) – Value (voltage) of “Full” intensity</p></li>
+<li><p><strong>temp</strong> (<em>int</em>) – Temperature of circuit</p></li>
+<li><p><strong>file_type</strong> (<em>str</em>) – Type of file being produced - allowed to be one of two values: “open” or “short”</p></li>
+<li><p><strong>type_num</strong> (<em>int</em>) – Amount of the <code class="docutils literal notranslate"><span class="pre">file_type</span></code> provided to create</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="circuit_sim.circuit_sim.list_types">
+<span class="sig-prename descclassname"><span class="pre">circuit_sim.circuit_sim.</span></span><span class="sig-name descname"><span class="pre">list_types</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_cells</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sets_to_make</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#circuit_sim.circuit_sim.list_types" title="Permalink to this definition">¶</a></dt>
+<dd><p>Lists possible sets given a max cells limit</p>
+<p>Includes optional support for specifying only a subset of the sets to be made,
+which are supported through pass-through of sets_to_make</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>max_cells</strong> (<em>list</em>) – List of integers indicating max cells that are allowed for each cell set</p></li>
+<li><p><strong>sets_to_make</strong> (<em>list</em>) – Semi-Optional list of sets to make that defaults to everything if None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Sets in format of [Row, Column]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>sets (list)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="circuit_sim.circuit_sim.set_logger">
+<span class="sig-prename descclassname"><span class="pre">circuit_sim.circuit_sim.</span></span><span class="sig-name descname"><span class="pre">set_logger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">logging.Logger</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#circuit_sim.circuit_sim.set_logger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set up of logging program based on a provided logging.Logger</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>log</strong> (<em>logging.Logger</em>) – Logger object to add handlers to</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – Output file name</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="analysis.html" class="btn btn-neutral float-right" title="analysis.py" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../index.html" class="btn btn-neutral float-left" title="circuit-sim Documentation by @aureus448" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Nate Ruppert.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
