@@ -179,13 +179,13 @@ def data_analysis(path: pathlib.PurePath, data_name) -> None:
                     gigantor = []  # normal
                     specialdf = []  # special
                     # check for special as that is last file created for each set
-                    if os.path.exists(
-                        f"Output/Data/{dataset.name}-{directory.name}-Special.csv"
-                    ):
-                        logging.debug(
-                            f"Data for set {dataset.name}-{directory.name} already exists"
-                        )
-                        continue  # skip already done sets
+                    # if os.path.exists(
+                    #     f"Output/Data/{dataset.name}-{directory.name}-Special.csv"
+                    # ):
+                    #     logging.debug(
+                    #         f"Data for set {dataset.name}-{directory.name} already exists"
+                    #     )
+                    #     continue  # skip already done sets
                     for sub_dir in os.scandir(directory.path):
                         if sub_dir.is_dir():
                             # Variables used for each file
@@ -350,7 +350,10 @@ def data_analysis(path: pathlib.PurePath, data_name) -> None:
                     # defined as lists
                     gigantor = pd.concat(gigantor, ignore_index=True)
                     specialdf = pd.concat(specialdf, ignore_index=True)
-                    pd.concat([gigantor, specialdf], ignore_index=True).to_csv(
+                    # For some unknown reason pandas removes rounding
+                    # (OOM? Read from original np array?)
+                    # .round(2) returns this rounding
+                    pd.concat([gigantor, specialdf], ignore_index=True).round(2).to_csv(
                         f"Output/Data/{dataset.name}/{dataset.name}-{directory.name}.csv",
                         index=False,
                     )
@@ -370,11 +373,15 @@ def data_analysis(path: pathlib.PurePath, data_name) -> None:
                 logging.info(f"Creating set dataframe for: {dataset.name}")
                 start_create = time.perf_counter()
                 mega_set = pd.concat(temp_list, ignore_index=True, copy=True)
-                mega_set.to_csv(f"Output/Data/{dataset.name}-Shading.csv", index=False)
+                mega_set.round(2).to_csv(
+                    f"Output/Data/{dataset.name}-Shading.csv", index=False
+                )
                 mega_set_special = pd.concat(
                     temp_list_special, ignore_index=True, copy=True
                 )
-                mega_set_special.to_csv(f"Output/Data/{dataset.name}-Special.csv")
+                mega_set_special.round(2).to_csv(
+                    f"Output/Data/{dataset.name}-Special.csv", index=False
+                )
                 dataframe_list.append(mega_set)
                 dataframe_list_special.append(mega_set_special)
                 name_list.append(f"{dataset.name}")
@@ -414,12 +421,12 @@ def data_analysis(path: pathlib.PurePath, data_name) -> None:
     logging.info("Creating complete dataframes - this will take a bit")
     # Concatenate everything
     mega_set = pd.concat(dataframe_list, ignore_index=True, copy=False)
-    mega_set.to_csv("Output/all_cell_data_shading.csv", index=False)
+    mega_set.round(2).to_csv("Output/all_cell_data_shading.csv", index=False)
     mega_set_special = pd.concat(dataframe_list_special, ignore_index=True, copy=False)
-    mega_set_special.to_csv("Output/all_cell_data_special.csv", index=False)
-    pd.concat([mega_set, mega_set_special], ignore_index=True, copy=False).to_csv(
-        "Output/all_cell_data_combined.csv", index=False
-    )
+    mega_set_special.round(2).to_csv("Output/all_cell_data_special.csv", index=False)
+    pd.concat([mega_set, mega_set_special], ignore_index=True, copy=False).round(
+        2
+    ).to_csv("Output/all_cell_data_combined.csv", index=False)
     # print(name_list)
     # print(dataframe_list)
     # with pd.ExcelWriter("Output/all_cell_data.xlsx") as writer: - takes wayyyyyy to long I give up
