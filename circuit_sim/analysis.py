@@ -351,7 +351,8 @@ def data_analysis(path: pathlib.PurePath, data_name) -> None:
                     gigantor = pd.concat(gigantor, ignore_index=True)
                     specialdf = pd.concat(specialdf, ignore_index=True)
                     pd.concat([gigantor, specialdf], ignore_index=True).to_csv(
-                        f"Output/Data/{dataset.name}/{dataset.name}-{directory.name}.csv"
+                        f"Output/Data/{dataset.name}/{dataset.name}-{directory.name}.csv",
+                        index=False,
                     )
                     logging.debug(f"Took {time.perf_counter() - start:.2f} seconds")
                     # gigantor.to_csv(
@@ -369,7 +370,7 @@ def data_analysis(path: pathlib.PurePath, data_name) -> None:
                 logging.info(f"Creating set dataframe for: {dataset.name}")
                 start_create = time.perf_counter()
                 mega_set = pd.concat(temp_list, ignore_index=True, copy=True)
-                mega_set.to_csv(f"Output/Data/{dataset.name}-Shading.csv")
+                mega_set.to_csv(f"Output/Data/{dataset.name}-Shading.csv", index=False)
                 mega_set_special = pd.concat(
                     temp_list_special, ignore_index=True, copy=True
                 )
@@ -410,12 +411,15 @@ def data_analysis(path: pathlib.PurePath, data_name) -> None:
             "Please re-run the tool to re-simulate the error data."
         )
         return
-    logging.info("Creating complete dataframe - this will take a bit")
+    logging.info("Creating complete dataframes - this will take a bit")
     # Concatenate everything
     mega_set = pd.concat(dataframe_list, ignore_index=True, copy=False)
-    mega_set.to_csv("Output/all_cell_data-Shading.csv")
+    mega_set.to_csv("Output/all_cell_data_shading.csv", index=False)
     mega_set_special = pd.concat(dataframe_list_special, ignore_index=True, copy=False)
-    mega_set_special.to_csv("Output/all_cell_data-Special.csv")
+    mega_set_special.to_csv("Output/all_cell_data_special.csv", index=False)
+    pd.concat([mega_set, mega_set_special], ignore_index=True, copy=False).to_csv(
+        "Output/all_cell_data_combined.csv", index=False
+    )
     # print(name_list)
     # print(dataframe_list)
     # with pd.ExcelWriter("Output/all_cell_data.xlsx") as writer: - takes wayyyyyy to long I give up
