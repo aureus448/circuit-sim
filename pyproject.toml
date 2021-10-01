@@ -18,7 +18,7 @@ sphinx-rtd-theme = "^0.5.2"
 pydeps = "^1.9.13"
 pytest = "^6.2.4"
 flake8 = "^3.9.2"
-black = "^21.5b2"
+black = "^21.9b0"
 pytest-cov = "^2.12.1"
 pyinstaller = "^4.3"
 
