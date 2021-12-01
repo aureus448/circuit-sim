@@ -12,7 +12,7 @@ pandas = "^1.3.0"
 
 [tool.poetry.dev-dependencies]
 pre-commit = "^2.13.0"
-Sphinx = "^4.1.0"
+Sphinx = "^4.3.1"
 rinohtype = "^0.5.3"
 sphinx-rtd-theme = "^0.5.2"
 pydeps = "^1.9.13"
